@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.hello.mapper.MemberMapper">
+
+	<!-- <resultMap id="sample" type="egovframework.example.sample.service.SampleVO">
+		<result property="id" column="id"/>
+		<result property="name" column="name"/>
+		<result property="description" column="description"/>
+		<result property="useYn" column="use_yn"/>
+		<result property="regUser" column="reg_user"/>
+	</resultMap>
+	
+	<resultMap id="memberVO" type="mvc.domain.MemberVO">
+		<result property="user_id" column="user_id"/>
+		<result property="user_pw" column="user_pw"/>
+		<result property="user_name" column="user_name"/>
+		<result property="user_email" column="user_email"/>
+	</resultMap> -->
+	
+	
+	
+    <insert id="insertMember">
+        insert into member values
+                          (#{user_id},#{user_pw},#{user_name},#{user_email})
+    </insert>
+    
+    <select id="selectMember" resultType="memberVO">
+    	SELECT
+    		user_id,
+    		user_pw,
+    		user_name,
+    		user_email
+    	FROM member
+    </select>
+
+</mapper>
