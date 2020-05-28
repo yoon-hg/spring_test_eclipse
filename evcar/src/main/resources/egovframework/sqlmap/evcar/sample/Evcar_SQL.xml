@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="EvSearchDAO">
+
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias  alias="searchVO" type="egovframework.example.sample.service.SampleDefaultVO"/>
+
+	<resultMap id="sample" class="egovframework.example.sample.service.SampleVO">
+		<result property="id" column="id"/>
+		<result property="name" column="name"/>
+		<result property="description" column="description"/>
+		<result property="useYn" column="use_yn"/>
+		<result property="regUser" column="reg_user"/>
+	</resultMap>
+
+	<select id="EvSearchDAO.selectData" resultClass="egovMap">
+	
+			SELECT * FROM chgr
+
+	</select>
+	
+	<select id="EvSearchDAO.selectUnion" resultClass="egovMap">
+	
+			SELECT PROVIDER_ID, ST_ID, CHGR_ID, CHGR_NM, GPS_XPOS, GPS_YPOS FROM chgr
+			UNION
+			SELECT B_ID AS PROVIDER_ID , ST_ID, CHGR_ID, ST_NM AS CHGR_NM, GPS_XPOS AS GPS_YPOS, GPS_YPOS AS GPS_YPOS FROM if_chgr
+
+	</select>
+	
+	<select id="EvSearchDAO.selectJoin" resultClass="egovMap">
+	
+			SELECT 
+				if_chgr.B_ID AS PROVIDER_ID , 
+				if_chgr.ST_ID, 
+				if_chgr.CHGR_ID, 
+				if_chgr.ST_NM AS CHGR_NM, 
+				if_chgr.GPS_XPOS AS GPS_YPOS, 
+				if_chgr.GPS_YPOS AS GPS_XPOS,
+				pnu_info.PNU_NO,
+				pnu_info.DO_NM,
+				pnu_info.SI_NM,
+				pnu_info.DONG_NM
+				 
+				FROM if_chgr
+				LEFT JOIN pnu_info ON 
+					pnu_info.DO_NM = if_chgr.PNU_DO_NM AND
+					pnu_info.SI_NM = if_chgr.PNU_SI_NM AND
+					pnu_info.DONG_NM = if_chgr.PNU_DONG_NM
+				LIMIT 100
+
+	</select>
+    
+    <select id="EvSearchDAO.selectIdoDong_list" resultClass="egovMap">
+			SELECT
+				B.B_ID,
+				B.ST_ID,
+				B.CHGR_ID,
+				B.RECHG_EST_FNSH_DT,
+				B.RECHG_W_ENERGY,
+				B.COST,
+				A.PNU_SI_NM,
+				A.PNU_DONG_NM
+		
+			FROM IF_CHGR A
+			LEFT JOIN IF_RECHG_LIST B ON B.B_ID = A.B_ID
+				AND B.ST_ID = A.ST_ID
+				AND B.CHGR_ID = A.CHGR_ID
+			WHERE B.RECHG_EST_FNSH_YN = 'Y'
+				AND A.PNU_DONG_NM = '이도이동'
+				AND A.B_ID = 'ME'
+				AND DATE_FORMAT(B.RECHG_EST_SDT, '%Y-%m') = '2020-01'
+			
+	</select>
+    
+    <select id="EvSearchDAO.selectIdoDong_total" resultClass="egovMap">
+			SELECT
+				A.B_ID,
+				DATE_FORMAT(B.RECHG_EST_SDT, '%Y-%m') AS RECHG_EST_SDT,
+				SUM(B.RECHG_W_ENERGY) AS RECHG_W_ENERGY,
+				SUM(B.COST) AS COST,
+				A.PNU_SI_NM,
+				A.PNU_DONG_NM
+			FROM IF_CHGR A
+			LEFT JOIN IF_RECHG_LIST B ON B.B_ID = A.B_ID
+				AND B.ST_ID = A.ST_ID
+				AND B.CHGR_ID = A.CHGR_ID
+			WHERE A.B_ID = 'ME'
+				AND B.RECHG_EST_FNSH_YN = 'Y'
+				AND A.PNU_DONG_NM ='이도이동'
+				AND DATE_FORMAT(B.RECHG_EST_SDT, '%Y-%m') = '2020-01'
+			GROUP BY DATE_FORMAT(B.RECHG_EST_SDT, '%Y-%m')
+			
+	</select>
+
+</sqlMap>

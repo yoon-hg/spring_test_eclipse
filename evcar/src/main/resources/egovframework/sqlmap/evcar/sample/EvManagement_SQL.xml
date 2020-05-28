@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="EvManagementDAO">
+
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	
+	<!-- 충전소 -->
+	<select id="EvManagementDAO.selectStation" resultClass="egovMap">
+			SELECT
+				S.ST_ID,
+				S.ST_NM,
+				S.ADDR_RD_M,
+				S.ADDR_RD_D,
+				S.ADDR_LD_M,
+				S.ADDR_LD_D,
+				S.PNU_SI_NM
+			FROM ST S
+			WHERE S.DEL_YN = 'N'
+			ORDER BY REG_DT DESC
+			LIMIT 50
+	</select>
+	
+	
+	<!-- 고객 -->
+	<select id="EvManagementDAO.selectClient" resultClass="egovMap">
+			SELECT
+				CASE C.CUST_TP WHEN 'B' THEN '기업' ELSE '개인' END AS CUST_TP,
+				C.CUST_NM,
+				IFNULL(C.BIZ_TAX_ID,"") AS BIZ_TAX_ID,
+				IFNULL(C.TEL,"") AS TEL,
+				IFNULL(C.FAX,"") AS FAX,
+				C.CUST_ID
+			FROM cust C
+			WHERE C.DEL_YN = 'N'
+			ORDER BY C.CUST_NM
+	</select>
+	
+	<!-- 충전소 조회 -->
+	<select id="EvManagementDAO.stationSearch" resultClass="egovMap">
+			SELECT
+				S.ST_ID,
+				S.ST_NM,
+				S.ADDR_RD_M,
+				S.ADDR_RD_D,
+				S.ADDR_LD_M,
+				S.ADDR_LD_D
+			FROM ST S
+			WHERE S.DEL_YN = 'N'
+			AND S.ST_NM LIKE CONCAT('%',#search#,'%')
+			ORDER BY REG_DT DESC
+			LIMIT 20
+	</select>
+	
+	<!-- 고객 조회-->
+	<select id="EvManagementDAO.clientSearch" resultClass="egovMap">
+			SELECT
+				CASE C.CUST_TP WHEN 'B' THEN '기업' ELSE '개인' END AS CUST_TP,
+				C.CUST_NM,
+				IFNULL(C.BIZ_TAX_ID,"") AS BIZ_TAX_ID,
+				IFNULL(C.TEL,"") AS TEL,
+				IFNULL(C.FAX,"") AS FAX,
+				C.CUST_ID
+			FROM cust C
+			WHERE C.DEL_YN = 'N'
+			AND C.CUST_NM LIKE CONCAT('%',#search#,'%')
+			ORDER BY C.CUST_NM
+	</select>
+	
+	
+	<!-- 고객등록 -->
+	<insert id="EvManagementDAO.insertClient" parameterClass="egovMap">
+	INSERT INTO
+		CUST(CUST_ID,PROVIDER_ID,CUST_NM,CUST_TP,TEL,DEL_YN,REG_UID,REG_DT)
+		VALUES(
+				LPAD((SELECT MAX(CUST_ID) FROM cust a)+1,4,0),
+				#providerId#,
+				#custNm#,
+				#custTp#,
+				#tel#,
+				'N',
+				'TEST_HG',
+				NOW())
+	</insert>
+	
+	<!-- 충전소등록 -->
+	<insert id="EvManagementDAO.insertStation" parameterClass="egovMap">
+	INSERT INTO
+		ST(ST_ID,ST_NM,ADDR_RD_M,ADDR_RD_D,ADDR_LD_M,ADDR_LD_D,DEL_YN,REG_UID,REG_DT)
+		VALUES(
+				(SELECT MAX(ST_ID) FROM ST A WHERE LEFT(A.ST_ID,2) = #pnuSiNm#)+1,
+				#stNm#,
+				#addrRdM#,
+				#addrRdD#,
+				#addrLdM#,
+				#addrLdD#,
+				'N',
+				'TEST_HG',
+				NOW())
+	</insert>
+	
+	
+	<!-- 고객선택 조회 -->
+	<select id="EvManagementDAO.listClientRead" resultClass="egovMap">
+		SELECT * FROM CUST WHERE CUST_ID = #custId#
+	</select>
+	
+	<!-- 충전소 선택 조회 -->
+	<select id="EvManagementDAO.listStationRead" resultClass="egovMap">
+		SELECT * FROM ST WHERE ST_ID = #stId#
+	</select>
+	
+	
+	<!-- 고객 수정 -->
+	<update id="EvManagementDAO.updateClient" parameterClass="egovMap">
+			UPDATE CUST
+				SET 
+					PROVIDER_ID = #providerId#,
+					CUST_NM = #custNm#,
+					CUST_TP = #custTp#,
+					TEL = #tel#,
+					FAX = #fax#
+				WHERE CUST_ID = #custId#
+	</update>
+	
+	<!-- 충전소 수정 -->
+	<update id="EvManagementDAO.updateStation" parameterClass="egovMap">
+			UPDATE ST
+				SET 
+					ST_NM = #stNm#,
+					PNU_SI_NM = #pnuSiNm#,
+					ADDR_RD_M = #addrRdM#,
+					ADDR_RD_D = #addrRdD#,
+					ADDR_LD_M = #addrLdM#,
+					ADDR_LD_D = #addrLdD#
+				WHERE ST_ID = #stId#
+	</update>
+	
+	<!-- 고객 삭제 -->
+	<update id="EvManagementDAO.deleteClient">
+			UPDATE CUST
+				SET
+					DEL_YN='Y',
+					MOD_DT=NOW(),
+					MOD_UID='TEST_HG'
+				WHERE CUST_ID = #custId#
+	</update>
+	
+	
+	<!-- 충전소 삭제 -->
+	<update id="EvManagementDAO.deleteStation">
+			UPDATE ST
+				SET
+					DEL_YN='Y',
+					MOD_DT=NOW(),
+					MOD_UID='TEST_HG'
+				WHERE ST_ID = #stId#
+	</update>
+	
+	<!-- ajax 시별 동 조회 -->
+	<select id="EvManagementDAO.selectStationAjax" resultClass="egovMap">
+			SELECT
+				S.PNU_DONG_NM
+			FROM ST S
+			WHERE S.PNU_SI_NM = #pnuSiNm#
+			AND S.PNU_DONG_NM IS NOT NULL
+			GROUP BY S.PNU_DONG_NM
+	</select>
+	
+	<!-- ajax 충전소 조회 -->
+	<select id="EvManagementDAO.searchAjax" resultClass="egovMap">
+			SELECT
+				S.ST_NM,
+				S.PARKING_FEE_YN,
+				S.PARKING_FEE_DETL,
+				S.ADDR_RD_M,
+				S.ADDR_RD_D
+			FROM ST S
+			WHERE 1=1
+			<isNotEmpty prepend="AND" property="pnuSiNm">
+				S.PNU_SI_NM = #pnuSiNm#
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="pnuDongNm" >
+				S.PNU_DONG_NM = #pnuDongNm#
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="parkingFeeYn" >
+				S.PARKING_FEE_YN = #parkingFeeYn#
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="stNm">
+				S.ST_NM LIKE CONCAT('%',#stNm#,'%')
+			</isNotEmpty>
+	</select>
+	
+	<!-- ajax메뉴 조회 -->
+	<select id="EvManagementDAO.codemenuAjax" resultClass="egovMap">
+		SELECT
+			LEFT(C.CD_GRP,2) AS CD_GRP,
+			C.CD_GRP_NM
+		FROM cd_grp C
+	</select>
+	
+	
+	<select id="EvManagementDAO.codeContentAjax" resultClass="egovMap">
+		SELECT
+			COMM.COMM_CD,
+			COMM.CD_NM,
+			CD.CD_GRP_NM
+		FROM comm_cd_detl COMM
+		LEFT JOIN CD_GRP CD ON CD.CD_GRP = COMM.CD_GRP
+		WHERE CD.CD_GRP_NM = #cdGrp#
+	</select>
+
+</sqlMap>

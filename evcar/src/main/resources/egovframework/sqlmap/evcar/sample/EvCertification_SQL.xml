@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="EvCertificationDAO">
+
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	
+	<select id="EvCertificationDAO.selectList" parameterClass="egovMap" resultClass="egovMap">
+		SELECT MEM.MEM_AUTH_INPUT_NO,
+		       DATE_FORMAT(MEM.MEM_AUTH_REQ_DT, '%Y-%m-%d %H:%i:%s') AS MEM_AUTH_REQ_DT,
+		       C.CHGR_NM,
+		       DATE_FORMAT(MEM.RES_DT, '%Y-%m-%d %H:%i:%s') AS RES_DT,
+		       EVCMS.FN_CODE_NM(MEM.AUTH_RSLT_CD, 'PS09') AS SF,
+		       EVCMS.FN_CODE_NM(MEM.AUTH_RSLT_VALID, 'PS09') AS AUTH_RSLT_VALID
+		FROM   mem_auth_list MEM
+		       LEFT JOIN CHGR C
+			       ON     C.PROVIDER_ID = MEM.PROVIDER_ID
+			       AND    C.ST_ID       = MEM.ST_ID
+			       AND    C.CHGR_ID     = MEM.CHGR_ID
+		WHERE  1=1
+		AND MEM.AUTH_RSLT_CD != '3'
+			<isNotEmpty prepend="AND" property="paFa">
+				MEM.AUTH_RSLT_CD = #paFa#
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="stationNm">
+				C.CHGR_NM  LIKE CONCAT('%',#stationNm#,'%')
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="certificationNb">
+				MEM.MEM_AUTH_INPUT_NO LIKE CONCAT('%',#certificationNb#,'%')
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="date1">
+				<isNotEmpty property="date2">
+				DATE_FORMAT(MEM.MEM_AUTH_REQ_DT,'%Y-%m-%d') BETWEEN #date1# AND #date2#
+				</isNotEmpty>
+			</isNotEmpty>
+		ORDER BY MEM.MEM_AUTH_REQ_DT DESC
+		LIMIT #recordCountPerPage# OFFSET #firstIndex#	
+	</select>
+
+
+	<select id="EvCertification.selectListTotCnt" parameterClass="egovMap" resultClass="int">
+		SELECT 
+			COUNT(MEM.MEM_AUTH_INPUT_NO)
+		FROM   mem_auth_list MEM
+		       LEFT JOIN CHGR C
+			       ON     C.PROVIDER_ID = MEM.PROVIDER_ID
+			       AND    C.ST_ID       = MEM.ST_ID
+			       AND    C.CHGR_ID     = MEM.CHGR_ID
+		WHERE  1=1
+		AND MEM.AUTH_RSLT_CD != '3'
+			<isNotEmpty prepend="AND" property="paFa">
+				MEM.AUTH_RSLT_CD = #paFa#
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="stationNm">
+				C.CHGR_NM  LIKE CONCAT('%',#stationNm#,'%')
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="certificationNb">
+				MEM.MEM_AUTH_INPUT_NO LIKE CONCAT('%',#certificationNb#,'%')
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="date1">
+				<isNotEmpty property="date2">
+				DATE_FORMAT(MEM.MEM_AUTH_REQ_DT,'%Y-%m-%d') BETWEEN #date1# AND #date2#
+				</isNotEmpty>
+			</isNotEmpty>
+	</select>
+	
+	<select id="EvCertificationDAO.selectStation" parameterClass="egovMap" resultClass="egovMap">
+		SELECT
+			CONCAT(C.PROVIDER_ID,C.ST_ID) AS ST_ID,
+			C.CHGR_ID,
+			C.CHGR_NM
+		FROM chgr C
+		WHERE 1=1
+			<isNotEmpty prepend="AND" property="st">
+				C.ST_ID  LIKE CONCAT('%',#st#,'%')
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="chgr">
+				C.CHGR_NM  LIKE CONCAT('%',#chgr#,'%')
+			</isNotEmpty>
+		LIMIT #recordCountPerPage# OFFSET #firstIndex#
+	</select>
+	
+	<select id="EvCertification.selectStationTotCnt" parameterClass="egovMap" resultClass="int">
+		SELECT
+			COUNT(C.ST_ID)
+		FROM chgr C
+		WHERE 1=1
+			<isNotEmpty prepend="AND" property="st">
+				C.ST_ID  LIKE CONCAT('%',#st#,'%')
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="chgr">
+				C.CHGR_NM  LIKE CONCAT('%',#chgr#,'%')
+			</isNotEmpty>
+	</select>
+</sqlMap>

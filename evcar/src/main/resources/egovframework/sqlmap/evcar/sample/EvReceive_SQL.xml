@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="EvReceiveDAO">
+
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	
+
+	
+	<select id="EvReceiveDAO.receiveList" parameterClass="egovMap" resultClass="egovMap">
+		select 
+			CONCAT(a.PROVIDER_ID,a.ST_ID) AS ST_ID,
+			c.CHGR_NM,
+			a.CMD_TP,
+			DATE_FORMAT(a.DATA_CREATE_DT, '%Y-%m-%d %H:%i:%s') AS CREATE_DT,
+			DATE_FORMAT(a.RES_DT, '%Y-%m-%d %H:%i:%s') AS RES_DT,
+			a.RES_CD,
+			a.RES_RSN_CD
+			
+		from evcms.recv_msg_list a
+		left join chgr c on a.PROVIDER_ID = c.PROVIDER_ID and a.ST_ID = c.ST_ID and a.CHGR_ID = c.CHGR_ID   
+		where 1=1  
+		 	<isNotEmpty prepend="AND" property="provider">
+				a.PROVIDER_ID = #provider#
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="stId">
+				a.ST_ID LIKE CONCAT('%',#stId#,'%')
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="chgrId">
+				c.CHGR_NM LIKE CONCAT('%',#chgrId#,'%')
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="maintenance">
+				c.CHGR_SVC_COM_ID = #maintenance#
+			</isNotEmpty>
+			
+			and DATE_FORMAT(a.RES_DT,'%Y-%m-%d') BETWEEN #date1# AND #date2#
+		
+			<isNotEmpty prepend="AND" property="command">
+				a.CMD_TP = #command#
+			</isNotEmpty>
+		order by RES_DT desc
+		LIMIT #recordCountPerPage# OFFSET #firstIndex#	
+	</select>
+	
+	<select id="EvReceiveDAO.receiveListTotCnt" parameterClass="egovMap" resultClass="int">
+		select 
+			COUNT(a.ST_ID)
+		from evcms.recv_msg_list a
+		left join chgr c on a.PROVIDER_ID = c.PROVIDER_ID and a.ST_ID = c.ST_ID and a.CHGR_ID = c.CHGR_ID   
+		where 1=1
+			
+			<isNotEmpty prepend="AND" property="provider">
+				a.PROVIDER_ID = #provider#
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="stId">
+				a.ST_ID LIKE CONCAT('%',#stId#,'%')
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="chgrId">
+				c.CHGR_NM LIKE CONCAT('%',#chgrId#,'%')
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="maintenance">
+				c.CHGR_SVC_COM_ID = #maintenance#
+			</isNotEmpty>
+			and	DATE_FORMAT(a.RES_DT,'%Y-%m-%d') BETWEEN #date1# AND #date2#
+			<isNotEmpty prepend="AND" property="command">
+				a.CMD_TP = #command#
+			</isNotEmpty>
+	</select>
+	
+	
+	<select id="EvReceiveDAO.selectReceive" parameterClass="egovMap" resultClass="egovMap">
+		SELECT
+			CONCAT(C.PROVIDER_ID,C.ST_ID) AS ST_ID,
+			C.CHGR_ID,
+			C.CHGR_NM
+		FROM chgr C
+		WHERE 1=1
+			<isNotEmpty prepend="AND" property="st">
+				C.ST_ID  LIKE CONCAT('%',#st#,'%')
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="chgr">
+				C.CHGR_NM  LIKE CONCAT('%',#chgr#,'%')
+			</isNotEmpty>
+		LIMIT #recordCountPerPage# OFFSET #firstIndex#
+	</select>
+	
+	<select id="EvReceiveDAO.selectReceiveCnt" parameterClass="egovMap" resultClass="int">
+		SELECT
+			COUNT(C.ST_ID)
+		FROM chgr C
+		WHERE 1=1
+			<isNotEmpty prepend="AND" property="st">
+				C.ST_ID  LIKE CONCAT('%',#st#,'%')
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="chgr">
+				C.CHGR_NM  LIKE CONCAT('%',#chgr#,'%')
+			</isNotEmpty>
+	</select>
+	
+	<select id="EvReceiveDAO.container" parameterClass="egovMap" resultClass="egovMap">
+		SELECT
+			recv.RES_MSG,
+			recv.RECV_MSG
+		FROM recv_msg_list recv
+		WHERE recv.PROVIDER_ID = LEFT(#stId#,2)
+		and recv.ST_ID = RIGHT(#stId#,6)
+		and DATE_FORMAT(recv.RES_DT, '%Y-%m-%d %H:%i:%s') = #resDt#
+		and recv.CMD_TP = #cmdTp#
+		
+	</select>
+</sqlMap>

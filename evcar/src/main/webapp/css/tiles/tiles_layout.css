@@ -1,0 +1,105 @@
+@CHARSET "UTF-8";
+
+/* UI Object */
+html, body {
+	height: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	_text-align: center
+}
+
+#wrap {
+	margin: 0 auto;
+	_text-align: left;
+	min-height: 100%;
+}
+
+#header {
+	width: 100%;
+	margin-top: 50px;
+	border-bottom: 2px solid #a9a9a9;
+}
+
+#header a {
+	font-family: LG PC;
+	font-size: 25px;
+	padding-left: 50px;
+	padding-right: 50px;
+	cursor: pointer;
+}
+
+#header a:hover {
+	border-bottom: 2px solid #ff4500;
+}
+
+.on{
+	border-bottom: 2px solid #ff4500;
+}
+
+#container {
+	width: 100%;
+	display: inline-block;
+	min-height: 100%;
+}
+
+#container:after {
+	display: block;
+	clear: both;
+	content: ''
+}
+
+.snb {
+	float: left;
+	width: 15%;
+	margin-left: 250px;
+	height: 700px;
+}
+
+#content {
+	float: left;
+	width: 80%;
+	min-height: 100%;
+}
+
+#footer {
+	width: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+#content {
+	width: 1100px;
+	min-height: 100%;
+}
+
+#login {
+	width: 100%;
+	height: 21px;
+	background-color: #e8e8e8;
+}
+
+#login a {
+	font-family: LG PC;
+	font-size: 18px;
+	float: right;
+	width: 130px; font-color : #fff;
+	cursor: pointer;
+	font-color: #fff;
+}
+#selected_menu b{
+	padding-right: 10px;
+	font-size:18px;
+} 
+
+/* Layout Color - 실제 서비스 적용 후 아래 코드는 삭제 하세요 */
+/*div{margin:0 0 10px;padding:10px 0;color:#2d2c2d;font-family:Tahoma;font-size:14px;font-weight:bold}
+#wrap{_width:620px;padding:10px;border:1px solid #bdbdbd;background:#f7f7f7}
+#header{margin-top:10px}
+#header,#container{padding:15px;border:2px solid #bfbfbf;background:#e5e5e5}
+#header,#container{width:auto}
+.snb,#content{margin-top:10px;border:1px solid #bdbdbd;background:#fff;text-align:center}
+#content{width:380px;height:200px}
+#footer{width:auto;padding:10px;border:2px solid #bfbfbf;background:#e5e5e5} */

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN"
+       "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+ 
+<tiles-definitions>
+ 
+    <!-- tiles // 타일즈 적용-->    
+    <definition name="layouts-tiles" template="/WEB-INF/jsp/tiles/template.jsp">
+    	<put-attribute name="login" value="/WEB-INF/jsp/tiles/include/login.jsp"/>
+        <put-attribute name="header" value="/WEB-INF/jsp/tiles/include/header.jsp" />
+        <put-attribute name="menu" value="/WEB-INF/jsp/tiles/include/menu.jsp" />        
+        <put-attribute name="body" value="" />
+        <put-attribute name="footer" value="/WEB-INF/jsp/tiles/include/footer.jsp" />
+    </definition>
+
+      
+    <definition name="*.tiles" extends="layouts-tiles">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}.jsp" />
+    </definition>
+    
+    <definition name="*/*.tiles" extends="layouts-tiles">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}.jsp" />
+    </definition>
+    
+    <definition name="*/*/*.tiles" extends="layouts-tiles">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}.jsp" />
+    </definition>
+    
+    <definition name="*/*/*/*.tiles" extends="layouts-tiles">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}/{4}.jsp" />
+    </definition>
+    
+    
+    <!-- no tiles // 타일즈 미 적용-->    
+    <definition name="no-tiles" template="/WEB-INF/jsp/tiles/notemplate.jsp">
+        <put-attribute name="noTemplate" value="" />
+    </definition>
+
+      
+    <definition name="*.jsp" extends="no-tiles">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}.jsp" />
+    </definition>
+    
+    <definition name="*/*.jsp" extends="no-tiles">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}.jsp" />
+    </definition>
+    
+    <definition name="*/*/*.jsp" extends="no-tiles">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}.jsp" />
+    </definition>
+    
+    <definition name="*/*/*/*.jsp" extends="no-tiles">
+      <put-attribute name="body" value="/WEB-INF/jsp/{1}/{2}/{3}/{4}.jsp" />
+    </definition>
+
+</tiles-definitions>
