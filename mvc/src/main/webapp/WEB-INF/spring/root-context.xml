@@ -20,9 +20,9 @@
 		<!-- MySQL dataSource -->
 	    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 	        <property name="driverClassName" value="com.mysql.jdbc.Driver"></property>
-	        <property name="url" value="jdbc:mysql://192.168.62.222:53306/HP"></property>
-	        <property name="username" value="qpakr38"></property>   
-	        <property name="password" value="asas0819"></property>
+	        <property name="url" value="***"></property>
+	        <property name="username" value="***"></property>   
+	        <property name="password" value="***"></property>
    		</bean>
 
  		<!--  mybatis와 스프링 연동작을 하기위한 SqlsessionFactory == DB연결 및 SQL의 실행을 대한객체 -->
